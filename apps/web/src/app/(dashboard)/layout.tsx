@@ -13,6 +13,7 @@ export default function DashboardLayout({
           <a href="/candidates" className="block px-3 py-2 rounded hover:bg-gray-700">Candidats</a>
           <a href="/company" className="block px-3 py-2 rounded hover:bg-gray-700">Entreprise</a>
           <a href="/audit" className="block px-3 py-2 rounded hover:bg-gray-700">Audit</a>
+          <a href="/compliance" className="block px-3 py-2 rounded hover:bg-gray-700">Compliance</a>
         </nav>
       </aside>
       <main className="flex-1 p-8 bg-gray-50">{children}</main>

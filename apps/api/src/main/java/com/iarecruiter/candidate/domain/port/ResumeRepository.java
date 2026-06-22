@@ -8,4 +8,5 @@ public interface ResumeRepository {
     Resume save(Resume resume);
     Optional<Resume> findById(UUID id);
     void deleteById(UUID id);
+    void deleteByCandidate(UUID candidateId);
 }

@@ -29,6 +29,11 @@ public class ResumeRepositoryAdapter implements ResumeRepository {
         jpa.deleteById(id);
     }
 
+    @Override
+    public void deleteByCandidate(UUID candidateId) {
+        jpa.deleteByCandidateId(candidateId);
+    }
+
     private Resume toDomain(ResumeEntity e) {
         return Resume.builder()
                 .id(e.getId()).companyId(e.getCompanyId()).candidateId(e.getCandidateId())
