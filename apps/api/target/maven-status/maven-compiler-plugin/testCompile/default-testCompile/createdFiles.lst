@@ -1,0 +1,6 @@
+com/iarecruiter/job/application/usecase/AnalyzeJobUseCaseTest.class
+com/iarecruiter/ai/application/service/ScoringServiceTest.class
+com/iarecruiter/auth/application/usecase/LoginUseCaseTest.class
+com/iarecruiter/shared/security/JwtServiceTest.class
+com/iarecruiter/auth/application/usecase/RegisterUseCaseTest.class
+com/iarecruiter/candidate/application/usecase/UploadResumeUseCaseTest.class
