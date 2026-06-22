@@ -37,6 +37,6 @@ jobs:
         working-directory: apps/web
         env:
           NEXT_PUBLIC_API_URL: http://localhost:8080
-          NEXTAUTH_SECRET: dummy-secret-for-ci-build-min-32-chars
+          NEXTAUTH_SECRET: dummy-secret-for-ci-build
           NEXTAUTH_URL: http://localhost:3000
         run: npm run build
