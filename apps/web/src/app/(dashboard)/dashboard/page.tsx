@@ -37,7 +37,15 @@ export default function DashboardPage() {
       <h1 className="text-2xl font-bold mb-6">Tableau de bord</h1>
 
       {loading && (
-        <div className="text-gray-500">Chargement...</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10" aria-busy="true" aria-label="Chargement...">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white rounded-lg shadow p-6 animate-pulse">
+              <div className="h-3 bg-gray-200 rounded w-2/3 mb-3" />
+              <div className="h-8 bg-gray-200 rounded w-1/2 mb-2" />
+              <div className="h-2 bg-gray-100 rounded w-3/4" />
+            </div>
+          ))}
+        </div>
       )}
 
       {error && (

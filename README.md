@@ -9,7 +9,7 @@ MVP V1 — AI-powered recruitment automation platform.
 - **Database**: PostgreSQL 16 + pgvector
 - **Storage**: MinIO
 - **Queue**: RabbitMQ
-- **AI**: Anthropic Claude (Haiku)
+- **AI**: Anthropic Claude Haiku (claude-haiku-4-5-20251001)
 
 ## Quick Start (Local Dev)
 
@@ -107,6 +107,28 @@ ia-agent-recut/
 | S6 | 7 | Ranking & Dashboard |
 | S7 | 8 | Compliance & Security |
 | S8 | 9 | Quality & Release |
+
+## API Reference
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | /api/auth/register | Register company + admin user |
+| POST | /api/auth/login | Login (returns JWT) |
+| POST | /api/auth/logout | Invalidate refresh token |
+| GET | /api/users/me | Current user profile |
+| GET | /api/companies/me | Company profile |
+| PUT | /api/companies/me | Update company |
+| GET | /api/jobs | List jobs |
+| POST | /api/jobs | Create job |
+| GET | /api/jobs/{id} | Get job detail |
+| POST | /api/jobs/{id}/analyze | Trigger AI job analysis |
+| POST | /api/resumes/upload | Upload CV (PDF/DOCX) |
+| GET | /api/jobs/{jobId}/ranking | Get candidate ranking |
+| POST | /api/ai/match | Trigger AI matching |
+| POST | /api/applications/{id}/decision | Record recruiter decision |
+| GET | /api/reports/dashboard | Dashboard KPIs |
+| GET | /api/audit/decisions | Audit log |
+| POST | /api/candidates/{id}/data-request | GDPR data request |
 
 ## Security Notes
 

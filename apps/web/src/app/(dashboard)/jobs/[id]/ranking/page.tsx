@@ -168,7 +168,28 @@ export default function JobRankingPage({ params }: { params: { id: string } }) {
         <h1 className="text-2xl font-bold">Ranking des candidats</h1>
       </div>
 
-      {loading && <div className="text-gray-500">Chargement...</div>}
+      {loading && (
+        <div className="bg-white rounded-xl shadow overflow-hidden animate-pulse" aria-busy="true" aria-label="Chargement...">
+          <div className="bg-gray-50 border-b border-gray-200 px-4 py-3 flex gap-4">
+            {['w-6', 'w-32', 'w-16', 'w-24', 'w-32', 'w-20'].map((w, i) => (
+              <div key={i} className={`h-3 bg-gray-200 rounded ${w}`} />
+            ))}
+          </div>
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="px-4 py-4 border-b border-gray-100 flex gap-4 items-center">
+              <div className="h-4 bg-gray-200 rounded w-4" />
+              <div className="flex-1 space-y-1">
+                <div className="h-4 bg-gray-200 rounded w-40" />
+                <div className="h-3 bg-gray-100 rounded w-28" />
+              </div>
+              <div className="h-6 bg-gray-200 rounded-full w-12" />
+              <div className="h-4 bg-gray-100 rounded w-24" />
+              <div className="h-4 bg-gray-100 rounded w-32" />
+              <div className="h-7 bg-gray-200 rounded w-16" />
+            </div>
+          ))}
+        </div>
+      )}
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 rounded p-4">{error}</div>
