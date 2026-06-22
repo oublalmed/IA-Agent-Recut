@@ -6,6 +6,7 @@ import com.iarecruiter.candidate.infrastructure.persistence.entity.ResumeEntity;
 import com.iarecruiter.candidate.infrastructure.persistence.jpa.JpaResumeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,6 +33,12 @@ public class ResumeRepositoryAdapter implements ResumeRepository {
     @Override
     public void deleteByCandidate(UUID candidateId) {
         jpa.deleteByCandidateId(candidateId);
+    }
+
+    @Override
+    public Optional<Resume> findLatestByCandidateId(UUID candidateId) {
+        List<ResumeEntity> resumes = jpa.findByCandidateIdOrderByCreatedAtDesc(candidateId);
+        return resumes.isEmpty() ? Optional.empty() : Optional.of(toDomain(resumes.get(0)));
     }
 
     private Resume toDomain(ResumeEntity e) {

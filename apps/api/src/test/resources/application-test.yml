@@ -1,0 +1,51 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
+  mail:
+    host: localhost
+    port: 3025
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+jwt:
+  secret: test-secret-key-for-integration-tests-minimum-256-bits-long-value
+  expiration-ms: 900000
+  refresh-expiration-ms: 604800000
+
+minio:
+  endpoint: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket-resumes: resumes
+
+anthropic:
+  api-key: test-key
+  model-extraction: claude-haiku-4-5-20251001
+  model-matching: claude-haiku-4-5-20251001
+  base-url: https://api.anthropic.com
+  max-tokens: 4096
+
+app:
+  mail:
+    from: noreply@test.local
+  frontend-url: http://localhost:3000
+
+rabbitmq:
+  exchange: ia.recruiter.exchange
+  queues:
+    resume-extraction: resume.extraction.queue
+    candidate-matching: candidate.matching.queue
+  routing-keys:
+    resume-extraction: resume.extraction.new
+    candidate-matching: candidate.matching.new

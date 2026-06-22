@@ -17,6 +17,7 @@ interface CandidateRanking {
   recommendation: string | null
   status: string
   humanOverride: boolean
+  cvUrl: string | null
 }
 
 type DecisionType = 'SELECTED' | 'REJECTED' | 'SHORTLISTED'
@@ -254,6 +255,16 @@ export default function JobRankingPage({ params }: { params: { id: string } }) {
                       >
                         Décision
                       </button>
+                      {r.cvUrl && (
+                        <a
+                          href={r.cvUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 border border-gray-300"
+                        >
+                          Voir CV
+                        </a>
+                      )}
                     </div>
                   </td>
                 </tr>

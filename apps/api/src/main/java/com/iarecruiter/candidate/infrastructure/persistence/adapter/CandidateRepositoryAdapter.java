@@ -5,6 +5,8 @@ import com.iarecruiter.candidate.domain.port.CandidateRepository;
 import com.iarecruiter.candidate.infrastructure.persistence.entity.CandidateEntity;
 import com.iarecruiter.candidate.infrastructure.persistence.jpa.JpaCandidateRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,6 +29,11 @@ public class CandidateRepositoryAdapter implements CandidateRepository {
     @Override
     public Optional<Candidate> findByCompanyIdAndEmail(UUID companyId, String email) {
         return jpa.findByCompanyIdAndEmail(companyId, email).map(this::toDomain);
+    }
+
+    @Override
+    public Page<Candidate> findByCompanyId(UUID companyId, Pageable pageable) {
+        return jpa.findByCompanyId(companyId, pageable).map(this::toDomain);
     }
 
     private Candidate toDomain(CandidateEntity e) {

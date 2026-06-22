@@ -17,5 +17,6 @@ public record CandidateRankingResponse(
         List<String> weaknesses,
         String recommendation,
         ApplicationStatus status,
-        boolean humanOverride
+        boolean humanOverride,
+        String cvUrl
 ) {}

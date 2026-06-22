@@ -70,6 +70,6 @@ public class AiController {
                 r.getCandidateEmail(), r.getCandidateFirstName(), r.getCandidateLastName(),
                 r.getMatchScore(), r.getSkillScore(), r.getExperienceScore(),
                 r.getStrengths(), r.getWeaknesses(), r.getRecommendation(),
-                r.getStatus(), r.isHumanOverride());
+                r.getStatus(), r.isHumanOverride(), r.getCvUrl());
     }
 }

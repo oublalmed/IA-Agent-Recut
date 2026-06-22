@@ -1,13 +1,18 @@
 package com.iarecruiter.auth.infrastructure.email;
 
 import com.iarecruiter.auth.domain.port.EmailPort;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
@@ -23,11 +28,16 @@ public class MailEmailAdapter implements EmailPort {
     @Override
     public void sendPasswordResetEmail(String to, String resetLink) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromAddress);
-            message.setTo(to);
-            message.setSubject("Reinitialisation de votre mot de passe — IA Recruiter");
-            message.setText("Cliquez sur ce lien pour reinitialiser votre mot de passe (valable 1h) :\n\n" + resetLink);
+            String template = new ClassPathResource("templates/password-reset-email.html")
+                    .getContentAsString(StandardCharsets.UTF_8);
+            String htmlBody = template.replace("{{resetUrl}}", resetLink);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
+            helper.setFrom(fromAddress);
+            helper.setTo(to);
+            helper.setSubject("Réinitialisation de votre mot de passe — IA Recruiter");
+            helper.setText(htmlBody, true);
             mailSender.send(message);
         } catch (Exception e) {
             log.error("Failed to send password reset email to {}: {}", to, e.getMessage());

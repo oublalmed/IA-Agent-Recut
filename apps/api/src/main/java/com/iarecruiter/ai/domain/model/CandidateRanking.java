@@ -21,4 +21,5 @@ public class CandidateRanking {
     private final String recommendation;
     private final ApplicationStatus status;
     private final boolean humanOverride;
+    private final String cvUrl;
 }
