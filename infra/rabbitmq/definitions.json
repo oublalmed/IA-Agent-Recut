@@ -1,0 +1,85 @@
+{
+  "vhosts": [{ "name": "/" }],
+  "exchanges": [
+    {
+      "name": "ia.recruiter.exchange",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false
+    },
+    {
+      "name": "ia.recruiter.dlx",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false
+    }
+  ],
+  "queues": [
+    {
+      "name": "resume.extraction.queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "ia.recruiter.dlx",
+        "x-dead-letter-routing-key": "resume.extraction.dead",
+        "x-message-ttl": 300000
+      }
+    },
+    {
+      "name": "candidate.matching.queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "ia.recruiter.dlx",
+        "x-dead-letter-routing-key": "candidate.matching.dead",
+        "x-message-ttl": 300000
+      }
+    },
+    {
+      "name": "resume.extraction.dead",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false
+    },
+    {
+      "name": "candidate.matching.dead",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false
+    }
+  ],
+  "bindings": [
+    {
+      "source": "ia.recruiter.exchange",
+      "vhost": "/",
+      "destination": "resume.extraction.queue",
+      "destination_type": "queue",
+      "routing_key": "resume.extraction.*"
+    },
+    {
+      "source": "ia.recruiter.exchange",
+      "vhost": "/",
+      "destination": "candidate.matching.queue",
+      "destination_type": "queue",
+      "routing_key": "candidate.matching.*"
+    },
+    {
+      "source": "ia.recruiter.dlx",
+      "vhost": "/",
+      "destination": "resume.extraction.dead",
+      "destination_type": "queue",
+      "routing_key": "resume.extraction.dead"
+    },
+    {
+      "source": "ia.recruiter.dlx",
+      "vhost": "/",
+      "destination": "candidate.matching.dead",
+      "destination_type": "queue",
+      "routing_key": "candidate.matching.dead"
+    }
+  ]
+}
