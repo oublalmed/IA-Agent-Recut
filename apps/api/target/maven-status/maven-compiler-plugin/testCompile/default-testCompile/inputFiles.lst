@@ -1,6 +1,0 @@
-/home/user/IA-Agent-Recut/apps/api/src/test/java/com/iarecruiter/ai/application/service/ScoringServiceTest.java
-/home/user/IA-Agent-Recut/apps/api/src/test/java/com/iarecruiter/auth/application/usecase/LoginUseCaseTest.java
-/home/user/IA-Agent-Recut/apps/api/src/test/java/com/iarecruiter/auth/application/usecase/RegisterUseCaseTest.java
-/home/user/IA-Agent-Recut/apps/api/src/test/java/com/iarecruiter/candidate/application/usecase/UploadResumeUseCaseTest.java
-/home/user/IA-Agent-Recut/apps/api/src/test/java/com/iarecruiter/job/application/usecase/AnalyzeJobUseCaseTest.java
-/home/user/IA-Agent-Recut/apps/api/src/test/java/com/iarecruiter/shared/security/JwtServiceTest.java
