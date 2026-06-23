@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { apiClient } from '@/lib/api-client'
 
 interface CandidateListItem {
@@ -26,16 +26,30 @@ export default function CandidatesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(0)
+  const [search, setSearch] = useState('')
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const loadCandidates = (p: number) => {
+  const loadCandidates = (p: number, q: string) => {
     setLoading(true)
-    apiClient.get<PageResponse>(`/api/candidates?page=${p}&size=20`)
+    const params = new URLSearchParams({ page: String(p), size: '20' })
+    if (q) params.set('search', q)
+    apiClient.get<PageResponse>(`/api/candidates?${params.toString()}`)
       .then(res => setData(res.data))
       .catch(() => setError('Impossible de charger les candidats.'))
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => { loadCandidates(page) }, [page])
+  useEffect(() => { loadCandidates(page, search) }, [page])
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    setSearch(val)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      setPage(0)
+      loadCandidates(0, val)
+    }, 300)
+  }
 
   const candidateName = (c: CandidateListItem) => {
     const full = [c.firstName, c.lastName].filter(Boolean).join(' ')
@@ -44,11 +58,21 @@ export default function CandidatesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Candidats</h1>
         {data && (
           <span className="text-sm text-gray-500">{data.totalElements} candidat(s)</span>
         )}
+      </div>
+
+      <div className="mb-4">
+        <input
+          type="text"
+          value={search}
+          onChange={handleSearchChange}
+          placeholder="Rechercher par nom, prénom ou email..."
+          className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
 
       {error && (

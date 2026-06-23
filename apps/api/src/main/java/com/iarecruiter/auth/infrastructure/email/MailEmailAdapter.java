@@ -46,6 +46,31 @@ public class MailEmailAdapter implements EmailPort {
 
     @Async
     @Override
+    public void sendMatchingCompleteEmail(String toEmail, String candidateName, String jobTitle, int matchScore, String rankingUrl) {
+        try {
+            String scoreColor = matchScore >= 70 ? "#22c55e" : matchScore >= 40 ? "#f59e0b" : "#ef4444";
+            String htmlBody = "<!DOCTYPE html><html><body style=\"font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px\">" +
+                    "<h2 style=\"color:#1a1a2e\">Matching IA terminé</h2>" +
+                    "<p>Le matching pour <strong>" + candidateName + "</strong> sur le poste <strong>" + jobTitle + "</strong> est terminé.</p>" +
+                    "<p>Score de matching : <span style=\"font-size:24px;font-weight:bold;color:" + scoreColor + "\">" + matchScore + "%</span></p>" +
+                    "<a href=\"" + rankingUrl + "\" style=\"display:inline-block;background:#6366f1;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;margin:16px 0\">Voir le classement</a>" +
+                    "<p style=\"color:#999;font-size:11px\">IA Recruiter Agent</p>" +
+                    "</body></html>";
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
+            helper.setFrom(fromAddress);
+            helper.setTo(toEmail);
+            helper.setSubject("Matching IA terminé — " + candidateName + " / " + jobTitle);
+            helper.setText(htmlBody, true);
+            mailSender.send(message);
+        } catch (Exception e) {
+            log.error("Failed to send matching complete email to {}: {}", toEmail, e.getMessage());
+        }
+    }
+
+    @Async
+    @Override
     public void sendWelcomeEmail(String to, String firstName) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();

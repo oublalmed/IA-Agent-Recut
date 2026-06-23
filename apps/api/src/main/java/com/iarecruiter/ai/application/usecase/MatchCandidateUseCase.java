@@ -3,11 +3,16 @@ package com.iarecruiter.ai.application.usecase;
 import com.iarecruiter.ai.application.service.ScoringService;
 import com.iarecruiter.ai.domain.model.*;
 import com.iarecruiter.ai.domain.port.*;
+import com.iarecruiter.auth.domain.port.EmailPort;
+import com.iarecruiter.candidate.domain.model.Candidate;
+import com.iarecruiter.candidate.domain.port.CandidateRepository;
 import com.iarecruiter.candidate.domain.port.ResumeRepository;
 import com.iarecruiter.job.domain.port.JobRepository;
 import com.iarecruiter.shared.exception.BusinessException;
 import com.iarecruiter.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MatchCandidateUseCase {
 
     private final JobRepository jobRepository;
@@ -24,9 +30,14 @@ public class MatchCandidateUseCase {
     private final AiReportRepository aiReportRepository;
     private final AiMatchingPort aiMatchingPort;
     private final ScoringService scoringService;
+    private final EmailPort emailPort;
+    private final CandidateRepository candidateRepository;
+
+    @Value("${app.frontend-url:http://localhost:3000}")
+    private String frontendUrl;
 
     @Transactional
-    public AiReport execute(UUID jobId, UUID resumeId, UUID companyId) {
+    public AiReport execute(UUID jobId, UUID resumeId, UUID companyId, String recruiterEmail) {
         var job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job", jobId.toString()));
         var resume = resumeRepository.findById(resumeId)
@@ -84,6 +95,19 @@ public class MatchCandidateUseCase {
                 .tokensOutput(report.getTokensOutput())
                 .generatedAt(Instant.now())
                 .build());
+
+        try {
+            Candidate candidate = candidateRepository.findById(resume.getCandidateId()).orElse(null);
+            String candidateName = candidate != null
+                    ? (candidate.getFirstName() + " " + candidate.getLastName()).trim()
+                    : resume.getCandidateId().toString();
+            String rankingUrl = frontendUrl + "/jobs/" + jobId + "/ranking";
+            emailPort.sendMatchingCompleteEmail(
+                    recruiterEmail, candidateName, job.getTitle(),
+                    (int) Math.round(saved.getMatchScore()), rankingUrl);
+        } catch (Exception e) {
+            log.warn("Could not send matching complete email: {}", e.getMessage());
+        }
 
         return saved;
     }

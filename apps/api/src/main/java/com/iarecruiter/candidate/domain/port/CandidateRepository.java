@@ -12,4 +12,5 @@ public interface CandidateRepository {
     Optional<Candidate> findById(UUID id);
     Optional<Candidate> findByCompanyIdAndEmail(UUID companyId, String email);
     Page<Candidate> findByCompanyId(UUID companyId, Pageable pageable);
+    Page<Candidate> search(UUID companyId, String query, Pageable pageable);
 }

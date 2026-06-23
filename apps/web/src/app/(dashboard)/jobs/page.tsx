@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { apiClient } from '@/lib/api-client'
 
 interface Job {
   id: string
@@ -29,8 +30,35 @@ const STATUS_COLORS: Record<Job['status'], string> = {
 
 export default function JobsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const mockJobs: Job[] = []
+  const loadJobs = (q: string, status: string) => {
+    setLoading(true)
+    const params = new URLSearchParams()
+    if (q) params.set('search', q)
+    if (status) params.set('status', status)
+    apiClient.get<Job[]>(`/api/jobs?${params.toString()}`)
+      .then(res => setJobs(res.data))
+      .catch(() => setJobs([]))
+      .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    loadJobs(search, statusFilter)
+  }, [statusFilter])
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    setSearch(val)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => loadJobs(val, statusFilter), 300)
+  }
+
+  const mockJobs = jobs
 
   return (
     <div>
@@ -44,7 +72,34 @@ export default function JobsPage() {
         </button>
       </div>
 
-      {mockJobs.length === 0 ? (
+      <div className="flex gap-3 mb-4">
+        <input
+          type="text"
+          value={search}
+          onChange={handleSearchChange}
+          placeholder="Rechercher par titre..."
+          className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <select
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Tous les statuts</option>
+          <option value="DRAFT">Brouillon</option>
+          <option value="PUBLISHED">Publiée</option>
+          <option value="PAUSED">Suspendue</option>
+          <option value="CLOSED">Fermée</option>
+        </select>
+      </div>
+
+      {loading && (
+        <div className="bg-white rounded-lg shadow p-8 text-center text-gray-400 animate-pulse">
+          Chargement...
+        </div>
+      )}
+
+      {!loading && mockJobs.length === 0 && (
         <div className="bg-white rounded-lg shadow p-12 text-center">
           <div className="text-gray-400 text-4xl mb-4">📋</div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune offre pour l&apos;instant</h3>
@@ -56,7 +111,9 @@ export default function JobsPage() {
             Créer une offre
           </button>
         </div>
-      ) : (
+      )}
+
+      {!loading && mockJobs.length > 0 && (
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">

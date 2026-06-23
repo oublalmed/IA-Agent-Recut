@@ -2,6 +2,9 @@ package com.iarecruiter.job.infrastructure.web;
 
 import com.iarecruiter.job.application.usecase.*;
 import com.iarecruiter.job.domain.model.Job;
+import com.iarecruiter.job.domain.model.JobStats;
+import com.iarecruiter.job.domain.model.JobStatus;
+import com.iarecruiter.job.domain.port.JobStatsRepository;
 import com.iarecruiter.job.infrastructure.web.dto.*;
 import com.iarecruiter.shared.exception.BusinessException;
 import com.iarecruiter.shared.security.AuthenticatedUser;
@@ -28,6 +31,7 @@ public class JobController {
     private final ListJobsUseCase listJobsUseCase;
     private final UpdateJobUseCase updateJobUseCase;
     private final AnalyzeJobUseCase analyzeJobUseCase;
+    private final JobStatsRepository jobStatsRepository;
 
     @PostMapping
     @Operation(summary = "Create a new job posting")
@@ -45,9 +49,14 @@ public class JobController {
     }
 
     @GetMapping
-    @Operation(summary = "List all jobs for the current company")
-    public ResponseEntity<List<JobResponse>> listJobs(@AuthenticationPrincipal AuthenticatedUser principal) {
-        List<Job> jobs = listJobsUseCase.execute(principal.getCompanyId());
+    @Operation(summary = "List all jobs for the current company (with optional status and search filters)")
+    public ResponseEntity<List<JobResponse>> listJobs(
+            @RequestParam(required = false) JobStatus status,
+            @RequestParam(required = false) String search,
+            @AuthenticationPrincipal AuthenticatedUser principal) {
+        List<Job> jobs = (status != null || (search != null && !search.isBlank()))
+                ? listJobsUseCase.execute(principal.getCompanyId(), status, search)
+                : listJobsUseCase.execute(principal.getCompanyId());
         return ResponseEntity.ok(jobs.stream().map(this::toResponse).toList());
     }
 
@@ -75,6 +84,16 @@ public class JobController {
                         request.salaryMin(), request.salaryMax(), request.status()
                 ));
         return ResponseEntity.ok(toResponse(updated));
+    }
+
+    @GetMapping("/{id}/stats")
+    @Operation(summary = "Get statistics for a job (applications count, scores, pending review)")
+    public ResponseEntity<JobStats> getJobStats(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal AuthenticatedUser principal) {
+        Job job = getJobUseCase.execute(id);
+        assertSameCompany(job, principal);
+        return ResponseEntity.ok(jobStatsRepository.getStatsForJob(id));
     }
 
     @PostMapping("/{id}/analyze")

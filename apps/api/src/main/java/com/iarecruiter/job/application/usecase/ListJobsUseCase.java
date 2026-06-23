@@ -1,6 +1,7 @@
 package com.iarecruiter.job.application.usecase;
 
 import com.iarecruiter.job.domain.model.Job;
+import com.iarecruiter.job.domain.model.JobStatus;
 import com.iarecruiter.job.domain.port.JobRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,9 @@ public class ListJobsUseCase {
 
     public List<Job> execute(UUID companyId) {
         return jobRepository.findByCompanyId(companyId);
+    }
+
+    public List<Job> execute(UUID companyId, JobStatus status, String search) {
+        return jobRepository.search(companyId, status, search);
     }
 }

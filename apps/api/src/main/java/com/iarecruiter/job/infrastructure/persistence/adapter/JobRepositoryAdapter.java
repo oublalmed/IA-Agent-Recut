@@ -41,6 +41,11 @@ public class JobRepositoryAdapter implements JobRepository {
         return jpa.findByCompanyIdAndStatus(companyId, status).stream().map(this::toDomain).toList();
     }
 
+    @Override
+    public List<Job> search(UUID companyId, JobStatus status, String titleSearch) {
+        return jpa.search(companyId, status, titleSearch).stream().map(this::toDomain).toList();
+    }
+
     private Job toDomain(JobEntity e) {
         List<RequiredSkill> skills = e.getRequiredSkills().stream()
                 .map(s -> RequiredSkill.builder()

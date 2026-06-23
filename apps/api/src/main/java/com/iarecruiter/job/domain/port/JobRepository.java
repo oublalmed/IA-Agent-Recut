@@ -12,4 +12,5 @@ public interface JobRepository {
     Optional<Job> findById(UUID id);
     List<Job> findByCompanyId(UUID companyId);
     List<Job> findByCompanyIdAndStatus(UUID companyId, JobStatus status);
+    List<Job> search(UUID companyId, JobStatus status, String titleSearch);
 }

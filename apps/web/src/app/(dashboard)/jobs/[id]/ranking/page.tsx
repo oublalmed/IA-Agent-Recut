@@ -157,16 +157,33 @@ export default function JobRankingPage({ params }: { params: { id: string } }) {
     return full || r.candidateEmail || r.candidateId
   }
 
+  const handleExportCsv = () => {
+    const link = document.createElement('a')
+    link.href = `${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/jobs/${jobId}/ranking/export`
+    link.download = `ranking-${jobId}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <div>
-      <div className="flex items-center gap-4 mb-6">
-        <a
-          href={`/jobs/${jobId}`}
-          className="text-sm text-blue-600 hover:underline"
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-4">
+          <a
+            href={`/jobs/${jobId}`}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            ← Retour à l&apos;offre
+          </a>
+          <h1 className="text-2xl font-bold">Ranking des candidats</h1>
+        </div>
+        <button
+          onClick={handleExportCsv}
+          className="px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 font-medium text-gray-700"
         >
-          ← Retour à l&apos;offre
-        </a>
-        <h1 className="text-2xl font-bold">Ranking des candidats</h1>
+          Export CSV
+        </button>
       </div>
 
       {loading && (

@@ -24,15 +24,17 @@ public class CandidateController {
     private final JpaResumeRepository jpaResumeRepository;
 
     @GetMapping
-    @Operation(summary = "List candidates for the current company (paginated)")
+    @Operation(summary = "List candidates for the current company (paginated, with optional search)")
     public ResponseEntity<Page<CandidateListResponse>> listCandidates(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String search,
             @AuthenticationPrincipal AuthenticatedUser principal) {
 
-        Page<CandidateListResponse> result = candidateRepository
-                .findByCompanyId(principal.getCompanyId(), PageRequest.of(page, size))
-                .map(this::toListResponse);
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<CandidateListResponse> result = (search != null && !search.isBlank())
+                ? candidateRepository.search(principal.getCompanyId(), search, pageRequest).map(this::toListResponse)
+                : candidateRepository.findByCompanyId(principal.getCompanyId(), pageRequest).map(this::toListResponse);
 
         return ResponseEntity.ok(result);
     }

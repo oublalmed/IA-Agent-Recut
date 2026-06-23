@@ -36,6 +36,11 @@ public class CandidateRepositoryAdapter implements CandidateRepository {
         return jpa.findByCompanyId(companyId, pageable).map(this::toDomain);
     }
 
+    @Override
+    public Page<Candidate> search(UUID companyId, String query, Pageable pageable) {
+        return jpa.search(companyId, query, pageable).map(this::toDomain);
+    }
+
     private Candidate toDomain(CandidateEntity e) {
         return Candidate.builder()
                 .id(e.getId()).companyId(e.getCompanyId()).email(e.getEmail())
